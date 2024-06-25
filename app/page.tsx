@@ -4,11 +4,23 @@ import Image from 'next/image'
 import { useChat } from 'ai/react'
 
 import { Chat } from '@/components/chat'
+import { SideView } from '@/components/side-view'
+
+const userID = '123'
 
 export default function Home() {
-  const { messages, input, handleInputChange, handleSubmit } = useChat({
+  const { messages, input, handleInputChange, handleSubmit, data } = useChat({
     api: '/api/chat',
+    body: { userID },
+
   })
+
+  const latestMessageWithToolInvocation = [...messages]
+    .reverse()
+    .find((message) => message.toolInvocations && message.toolInvocations.length > 0)
+ 
+  const toolInvocation = latestMessageWithToolInvocation?.toolInvocations?.[0]
+
 
   return (
     <main className="flex min-h-screen max-h-screen">
@@ -21,6 +33,10 @@ export default function Home() {
           input={input}
           handleInputChange={handleInputChange}
           handleSubmit={handleSubmit}
+        />
+        <SideView
+          toolInvocation={toolInvocation}
+          data={data}
         />
       </div>
     </main>
